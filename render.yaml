@@ -26,3 +26,21 @@ databases:
 
 redis:
   - name: kitchen-redis
+
+
+  - type: worker
+    name: celery-worker
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "celery -A app.worker.celery worker --loglevel=info"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: kitchen-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: kitchen-redis
+          type: redis
+          property: connectionString
+
