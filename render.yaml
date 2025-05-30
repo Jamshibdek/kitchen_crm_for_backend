@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: kitchen-api
+    env: python
+    plan: free
+    branch: main
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn app.main:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:10000"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: kitchen-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: kitchen-redis
+          type: redis
+          property: connectionString
+      - key: SECRET_KEY
+        value: "supersecret"
+      - key: JWT_ALGORITHM
+        value: "HS256"
+
+databases:
+  - name: kitchen-db
+
+redis:
+  - name: kitchen-redis
